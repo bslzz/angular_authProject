@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { SERVER_API_URL } from 'src/config/api';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 interface IUser {
   firstName: string;
@@ -16,6 +17,11 @@ interface IUser {
   providedIn: 'root',
 })
 export class AuthService {
+  currentUser: BehaviorSubject<IUser | null> =
+    new BehaviorSubject<IUser | null>(null);
+
+  jwtHelperService = new JwtHelperService();
+
   constructor(private http: HttpClient) {}
 
   getUsers(): Observable<IUser[]> {
@@ -24,7 +30,7 @@ export class AuthService {
 
   registerUser(user: IUser) {
     return this.http.post(
-      SERVER_API_URL + '/user/createuser',
+      `${SERVER_API_URL}/createuser`,
       {
         FirstName: user.firstName,
         LastName: user.lastName,
@@ -37,5 +43,40 @@ export class AuthService {
         responseType: 'text',
       }
     );
+  }
+
+  loginUser(user: IUser) {
+    return this.http.post(
+      `${SERVER_API_URL}/loginUser`,
+      {
+        Email: user.email,
+        Password: user.password,
+      },
+      {
+        responseType: 'text',
+      }
+    );
+  }
+
+  setToken(token: string) {
+    localStorage.setItem('token', token);
+    this.getTokenDetails();
+  }
+
+  getTokenDetails() {
+    const token = localStorage.getItem('token');
+
+    const userInfo = token && this.jwtHelperService.decodeToken(token);
+
+    const userData = userInfo && {
+      id: userInfo.id,
+      firstName: userInfo.firstName,
+      lastName: userInfo.lastName,
+      email: userInfo.email,
+      phoneNumber: userInfo.phoneNumber,
+      gender: userInfo.gender,
+    };
+
+    this.currentUser.next(userData);
   }
 }

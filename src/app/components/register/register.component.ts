@@ -9,7 +9,6 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class RegisterComponent implements OnInit {
   confirmPass: string = 'none';
-  isAccountCreated: boolean = false;
 
   constructor(private authService: AuthService) {}
 
@@ -58,16 +57,13 @@ export class RegisterComponent implements OnInit {
           if (res === 'Success') {
             this.displayMsg = 'User registered successfully!';
             this.toastMsgClass = 'bi bi-check-circle text-success';
-            this.isAccountCreated = true;
             this.registerForm.reset();
           } else if (res === 'Email already exists!') {
             this.displayMsg = 'Email already exists!';
             this.toastMsgClass = 'bi bi-x-octagon-fill text-danger';
-            this.isAccountCreated = false;
           } else {
             this.displayMsg = 'Error occured';
             this.toastMsgClass = 'bi bi-x-octagon-fill text-danger';
-            this.isAccountCreated = false;
           }
         });
     } else {
