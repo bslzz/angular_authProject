@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { SERVER_API_URL } from 'src/config/api';
 
 interface IUser {
   firstName: string;
@@ -15,17 +16,15 @@ interface IUser {
   providedIn: 'root',
 })
 export class AuthService {
-  public SERVER_API_URL: string = 'https://localhost:5001/api';
-
   constructor(private http: HttpClient) {}
 
   getUsers(): Observable<IUser[]> {
-    return this.http.get<IUser[]>(this.SERVER_API_URL);
+    return this.http.get<IUser[]>(SERVER_API_URL);
   }
 
   registerUser(user: IUser) {
     return this.http.post(
-      this.SERVER_API_URL + '/user/createuser',
+      SERVER_API_URL + '/user/createuser',
       {
         FirstName: user.firstName,
         LastName: user.lastName,
